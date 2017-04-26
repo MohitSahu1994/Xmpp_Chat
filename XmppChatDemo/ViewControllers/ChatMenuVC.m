@@ -33,7 +33,8 @@
     [super viewDidLoad];
     
     XMPPManager *manager = [XMPPManager sharedInstance];
-    manager._chatDelegate = self;
+    manager.chatDelegate = self;
+
     [self tableViewSetup];
     // Do any additional setup after loading the view.
     
@@ -51,10 +52,10 @@
     
     if(userId){
         self.navigationItem.title = userId;
-    if ([[self xmppManager] connect]) {
+    if (![[[self xmppManager]xmppStream] isConnected]) {
             
+        [[self xmppManager] connect];
         
-            
         
     }
     }

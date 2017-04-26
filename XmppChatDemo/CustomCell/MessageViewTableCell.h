@@ -14,4 +14,5 @@
 @property (nonatomic,strong) UILabel *senderAndTimeLabel;
 @property (nonatomic,strong) UITextView *messageContentView;
 @property (nonatomic,strong) UIImageView *bgImageView;
+@property (nonatomic ,strong) UILabel *statusLabel;
 @end

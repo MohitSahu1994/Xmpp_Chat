@@ -11,6 +11,7 @@
 #define localhost @"192.168.1.10"
 #import "XMPP.h"
 #import "NSString+Enhancement.h"
+#import "Constants.h"
 
 @implementation XMPPManager{
   
@@ -69,6 +70,19 @@ return xmppManager;
     xmppReconnect = [[XMPPReconnect alloc] init];
     [xmppReconnect activate:self.xmppStream];
     [xmppReconnect addDelegate:self delegateQueue:dispatch_get_main_queue()];
+    
+    
+    XMPPMessageDeliveryReceipts* xmppMessageDeliveryRecipts = [[XMPPMessageDeliveryReceipts alloc] init];
+    
+//    Automatically send message delivery receipts when a message with a delivery request is received
+    xmppMessageDeliveryRecipts.autoSendMessageDeliveryReceipts = YES;
+//     Message MUST NOT be of type 'error' or 'groupchat' - Message MUST have an id - Message MUST NOT have a delivery receipt or request - To must either be a bare JID or a full JID that advertises the urn:xmpp:receipts capability
+    
+    xmppMessageDeliveryRecipts.autoSendMessageDeliveryRequests = YES;
+    
+    [xmppMessageDeliveryRecipts addDelegate:self delegateQueue:dispatch_get_main_queue()];
+    [xmppMessageDeliveryRecipts activate:self.xmppStream];
+
 }
 
 - (void)goOnline {
@@ -152,7 +166,7 @@ return xmppManager;
 - (void)xmppStreamDidConnect:(XMPPStream *)sender {
     
     // connection to the server successful
-    isOpen = YES;
+    _isOpen = YES;
     NSError *error = nil;
     BOOL res = [[self xmppStream] authenticateWithPassword:password error:&error];
     NSLog(@"%zd", res);
@@ -166,30 +180,110 @@ return xmppManager;
     
 }
 
+- (void)xmppStream:(XMPPStream *)sender didSendMessage:(XMPPMessage *)message {
+
+    if ([message isChatMessageWithBody]) {
+        
+        MessageStatus status = MESSAGE_STATUS_SEND;
+        NSString *messageID = [message elementID];
+    
+    if (_messageDelegate && [_messageDelegate respondsToSelector:@selector(updateMessageStateForJID:messageId:status:)]) {
+        [_messageDelegate updateMessageStateForJID:[message.to bare] messageId:messageID status:status];
+    }
+    }
+
+}
+
+- (void)xmppStream:(XMPPStream *)sender didFailToSendMessage:(XMPPMessage *)message error:(NSError *)error{
+
+    if ([message isChatMessageWithBody]) {
+    MessageStatus status = MESSAGE_STATUS_FAILED;
+    NSString *messageID = [message elementID];
+    if (_messageDelegate && [_messageDelegate respondsToSelector:@selector(updateMessageStateForJID:messageId:status:)]) {
+        [_messageDelegate updateMessageStateForJID:[message.to bare] messageId:messageID status:status];
+    }
+
+    }
+
+}
+
 
 - (void)xmppStream:(XMPPStream *)sender didReceiveMessage:(XMPPMessage *)message {
     
     // message received
     
-    NSString *msg = [[message elementForName:@"body"] stringValue];
-    NSString *from = [[message attributeForName:@"from"] stringValue];
-    
-   NSString *attachement =  [[message elementsForName:@"attachment"] stringValue];
-    
-    NSLog(@"%@",attachement);
-
-    if (msg != nil && from != nil) {
-    NSMutableDictionary *messageDictionary = [[NSMutableDictionary alloc] init];
-    [messageDictionary setObject:msg forKey:@"msg"];
-    [messageDictionary setObject:from forKey:@"sender"];
-     [messageDictionary setObject:[NSString getCurrentTime] forKey:@"time"];
-        if (self._messageDelegate && [self._messageDelegate respondsToSelector:@selector(newMessageReceived:)]) {
-            [self._messageDelegate newMessageReceived:messageDictionary];
-        }
-    
+    if ([message hasReceiptResponse]) {
+        
+        [self handleReceiptResponse:message];
+        
+    }
+    else if([message isChatMessageWithBody]){
+        
+        [self handleChatMessageWithBody:message];
     }
     
+    
 }
+
+-(void)handleChatMessageWithBody:(XMPPMessage *)message{
+
+    
+        
+    
+    NSString *msg = [[message elementForName:@"body"] stringValue];
+    NSString *from = [[message attributeForName:@"from"] stringValue];
+    NSString *attachement;
+    if ([message elementsForName:@"attachment"]) {
+       attachement =  [[message elementForName:@"attachment"] stringValue];
+    }
+    
+   
+    
+    
+    NSLog(@"%@",attachement);
+    
+    if (msg != nil && from != nil) {
+        NSMutableDictionary *messageDictionary = [[NSMutableDictionary alloc] init];
+        [messageDictionary setObject:msg forKey:@"msg"];
+        [messageDictionary setObject:from forKey:@"sender"];
+        [messageDictionary setObject:[NSString getCurrentTime] forKey:@"time"];
+        
+       
+        if (_messageDelegate && [_messageDelegate respondsToSelector:@selector(newMessageReceived:)]) {
+            
+            [_messageDelegate newMessageReceived:messageDictionary];
+        }
+        
+        
+    }
+        
+
+}
+
+
+-(void)handleReceiptResponse:(XMPPMessage *)message{
+
+    MessageStatus status = MESSAGE_STATUS_DELIVERED;
+    NSXMLElement *received = [message elementForName:@"received" xmlns:@"urn:xmpp:receipts"];
+    if( received ){
+        NSString* readValue = [received attributeStringValueForName:@"read"];
+        if( [readValue isEqualToString:@"true"] )
+            status = MESSAGE_STATUS_READ;
+    }
+    
+    
+    NSString *messageID = [[[message elementForName:@"received"] attributeForName:@"id"] stringValue];
+    NSString *senderId = [message.from bare];
+    
+    if (_messageDelegate && [_messageDelegate respondsToSelector:@selector(updateMessageStateForJID:messageId:status:)]) {
+       
+        [_messageDelegate updateMessageStateForJID:senderId messageId:messageID status:status];
+    }
+
+}
+
+
+
 
 - (void)xmppStream:(XMPPStream *)sender didReceivePresence:(XMPPPresence *)presence {
     
@@ -202,16 +296,16 @@ return xmppManager;
         
         if ([presenceType isEqualToString:@"available"]) {
             
-            if (self._chatDelegate && [self._chatDelegate respondsToSelector:@selector(newBuddyOnline:)]) {
-                   [self._chatDelegate newBuddyOnline:[NSString stringWithFormat:@"%@@%@", presenceFromUser, @"localhost"]];
+            if (_chatDelegate && [_chatDelegate respondsToSelector:@selector(newBuddyOnline:)]) {
+                   [_chatDelegate newBuddyOnline:[NSString stringWithFormat:@"%@@%@", presenceFromUser, @"localhost"]];
            
                  }
            
             
         } else if ([presenceType isEqualToString:@"unavailable"]) {
             
-            if (self._chatDelegate && [self._chatDelegate respondsToSelector:@selector(buddyWentOffline:)]) {
-                  [self._chatDelegate buddyWentOffline:[NSString stringWithFormat:@"%@@%@", presenceFromUser, @"localhost"]];
+            if (_chatDelegate && [_chatDelegate respondsToSelector:@selector(buddyWentOffline:)]) {
+                  [_chatDelegate buddyWentOffline:[NSString stringWithFormat:@"%@@%@", presenceFromUser, @"localhost"]];
            
                }
             
@@ -226,8 +320,8 @@ return xmppManager;
 }
 
 
-#pragma mark--
-#pragma mark-- Roseter Delegate Methods
+#pragma mark
+#pragma mark- Roseter Delegate Methods
 
 - (void)xmppRoster:(XMPPRoster *)sender didReceivePresenceSubscriptionRequest:(XMPPPresence *)presence {
     
@@ -265,9 +359,9 @@ return xmppManager;
            [chatListArray addObject:[[itemElements[i] attributeForName:@"jid"]stringValue]];
             
         }
-            if (self._chatDelegate && [self._chatDelegate respondsToSelector:@selector(didfetchBuddies:)]) {
+            if (_chatDelegate && [_chatDelegate respondsToSelector:@selector(didfetchBuddies:)]) {
                 
-                [self._chatDelegate didfetchBuddies:chatListArray];
+                [_chatDelegate didfetchBuddies:chatListArray];
             }
             
        }
@@ -278,8 +372,8 @@ return xmppManager;
 }
 
 
-#pragma mark--
-#pragma mark-- Reconnection Delegate Methods
+#pragma mark
+#pragma mark- Reconnection Delegate Methods
 
 
 

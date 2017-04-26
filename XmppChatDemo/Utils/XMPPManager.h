@@ -23,21 +23,25 @@
 @protocol SMMessageDelegate
 
 - (void)newMessageReceived:(NSDictionary *)messageContent;
+-(void)updateMessageStateForJID:(NSString *)jid messageId:(NSString *)messageId status:(NSInteger)status;
+
+
 
 @end
 
 @interface XMPPManager : NSObject{
 
     NSString *password;
-    BOOL isOpen;
+    
   
 }
 
 @property (nonatomic, retain) IBOutlet ChatMenuVC *viewController;
 @property (nonatomic, readonly) XMPPStream *xmppStream;
 
-@property (nonatomic, assign) id  _chatDelegate;
-@property (nonatomic, assign) id  _messageDelegate;
+@property (nonatomic, assign) id  chatDelegate;
+@property (nonatomic, assign) id  messageDelegate;
+@property (nonatomic)BOOL isOpen;
 
 +(instancetype)sharedInstance;
 

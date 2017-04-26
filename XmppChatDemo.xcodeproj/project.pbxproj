@@ -36,6 +36,8 @@
 		70EBFCF61EAA0AB40055272E /* LoginVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 70EBFCEE1EAA0AB40055272E /* LoginVC.m */; };
 		70EBFCF71EAA0AB40055272E /* UserDefaultController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70EBFCF11EAA0AB40055272E /* UserDefaultController.m */; };
 		70EBFCF81EAA0AB40055272E /* XMPPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 70EBFCF31EAA0AB40055272E /* XMPPManager.m */; };
+		70EF6FB01EB08D39003CB9D8 /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = 70EF6FAF1EB08D39003CB9D8 /* Constants.m */; };
+		70EF6FB31EB0C7F8003CB9D8 /* Message.m in Sources */ = {isa = PBXBuildFile; fileRef = 70EF6FB21EB0C7F8003CB9D8 /* Message.m */; };
 		8012E828CB5142FD1FAE7C42 /* Pods_XmppChatDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 054A41BC7F9F00C60248C385 /* Pods_XmppChatDemo.framework */; };
 /* End PBXBuildFile section */
 
@@ -87,6 +89,10 @@
 		70EBFCF11EAA0AB40055272E /* UserDefaultController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserDefaultController.m; sourceTree = "<group>"; };
 		70EBFCF21EAA0AB40055272E /* XMPPManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMPPManager.h; sourceTree = "<group>"; };
 		70EBFCF31EAA0AB40055272E /* XMPPManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMPPManager.m; sourceTree = "<group>"; };
+		70EF6FAE1EB08D39003CB9D8 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
+		70EF6FAF1EB08D39003CB9D8 /* Constants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Constants.m; sourceTree = "<group>"; };
+		70EF6FB11EB0C7F8003CB9D8 /* Message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Message.h; sourceTree = "<group>"; };
+		70EF6FB21EB0C7F8003CB9D8 /* Message.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Message.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -169,6 +175,8 @@
 				702AB9B61EAF6CC800144DAB /* MessagePreview.h */,
 				702AB9B71EAF6CC800144DAB /* MessagePreview.m */,
 				702AB9B31EAF657D00144DAB /* MessagePreview.xib */,
+				70EF6FB11EB0C7F8003CB9D8 /* Message.h */,
+				70EF6FB21EB0C7F8003CB9D8 /* Message.m */,
 			);
 			path = XmppChatDemo;
 			sourceTree = "<group>";
@@ -222,6 +230,8 @@
 				70EBFCF31EAA0AB40055272E /* XMPPManager.m */,
 				708517BA1EAB467F00C78E3C /* NSString+Enhancement.h */,
 				708517BB1EAB467F00C78E3C /* NSString+Enhancement.m */,
+				70EF6FAE1EB08D39003CB9D8 /* Constants.h */,
+				70EF6FAF1EB08D39003CB9D8 /* Constants.m */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -366,9 +376,11 @@
 				70EBFCF81EAA0AB40055272E /* XMPPManager.m in Sources */,
 				70D33D891EAA7F1B0098A39B /* NewBuddyVC.m in Sources */,
 				705501BD1EAF16B800DD6FD1 /* ChatListCell.m in Sources */,
+				70EF6FB01EB08D39003CB9D8 /* Constants.m in Sources */,
 				70EBFCF41EAA0AB40055272E /* ChatMenuVC.m in Sources */,
 				708517B81EAB461900C78E3C /* AppDelegate.m in Sources */,
 				702AB9AF1EAF559A00144DAB /* ImageCaptureVC.m in Sources */,
+				70EF6FB31EB0C7F8003CB9D8 /* Message.m in Sources */,
 				702AB9B81EAF6CC800144DAB /* MessagePreview.m in Sources */,
 				70EBFCF61EAA0AB40055272E /* LoginVC.m in Sources */,
 				702AB9AB1EAF280300144DAB /* User.m in Sources */,

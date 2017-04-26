@@ -31,6 +31,11 @@
         _messageContentView.scrollEnabled = NO;
         [_messageContentView sizeToFit];
         [self.contentView addSubview:_messageContentView];
+        _statusLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+        _statusLabel.textAlignment = NSTextAlignmentCenter;
+        _statusLabel.font = [UIFont boldSystemFontOfSize:11.0];
+        _statusLabel.textColor = [UIColor lightGrayColor];
+        [self.contentView addSubview:_statusLabel];
         
     }
     

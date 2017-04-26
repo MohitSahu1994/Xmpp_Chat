@@ -10,4 +10,5 @@
 
 @interface NSString (Enhancement)
 + (NSString *) getCurrentTime;
++ (NSString *)uuid;
 @end
