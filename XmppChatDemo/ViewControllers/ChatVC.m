@@ -12,11 +12,18 @@
 #import "NSString+Enhancement.h"
 #import "MessageViewTableCell.h"
 #import <CoreText/CoreText.h>
-
+#import "ImageCaptureVC.h"
+#import "MessagePreview.h"
 
 #define Cell_Identifier @"messageCell"
-@interface ChatVC ()<UITableViewDelegate ,UITableViewDataSource,SMMessageDelegate>
+@interface ChatVC ()<UITableViewDelegate ,UITableViewDataSource,SMMessageDelegate ,ImageCaptureDelegate ,MessagePreviewDelegate>
+
+
+
+
 @property (nonatomic,retain) IBOutlet UITextField *messageField;
+@property (weak, nonatomic) IBOutlet UILabel *titleLabel;
+@property (weak, nonatomic) IBOutlet UILabel *statusLabel;
 @property (weak, nonatomic) IBOutlet UITableView *messageTableView;
 - (IBAction)sendMessageAction:(UIButton *)sender;
 - (IBAction)closeChatAction:(UIBarButtonItem *)sender;
@@ -32,7 +39,7 @@
     
      XMPPManager *manager = [self manager];
     manager._messageDelegate = self;
-    self.navigationItem.title = self.chatWithUser;
+    self.titleLabel.text = self.chatWithUser;
     
     messages = [[NSMutableArray alloc ] init];
     [self.messageField becomeFirstResponder];
@@ -146,18 +153,21 @@
 // react to the message received
 
 
-
-
-
 - (IBAction)sendMessageAction:(UIButton *)sender {
     [self.messageField resignFirstResponder];
     [self sendMessage];
     }
 
-- (IBAction)closeChatAction:(UIBarButtonItem *)sender {
-    
-    [self.navigationController popViewControllerAnimated:YES];
 
+- (IBAction)closeChatAction:(UIButton *)sender {
+    
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+- (IBAction)cameraButtonAction:(UIButton *)sender {
+    
+    ImageCaptureVC *imageCaptureVC = [[ImageCaptureVC alloc] initWithNibName:@"ImageCaptureVC" bundle:nil];
+    imageCaptureVC.delegate = self;
+    [self presentViewController:imageCaptureVC animated:YES completion:nil];
     
 }
 
@@ -202,10 +212,6 @@
 
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
 
 
 
@@ -241,6 +247,97 @@
     
     return frameSize;
     
+}
+
+
+
+
+
+#pragma mark--
+#pragma mark-- ImageCaptureDelegate Methods
+-(void)capturedImageByUser:(UIImage *)image{
+    MessagePreview *messagePreview = [[MessagePreview alloc] initWithNibName:@"MessagePreview" bundle:nil];
+    messagePreview.image = image;
+    messagePreview.delegate = self;
+    [self presentViewController:messagePreview animated:YES completion:nil];
+
+}
+
+
+#pragma mark--
+#pragma mark-- MessagePreviewDelegate Methods
+
+-(void)sendMessageWithImage:(UIImage *)image text:(NSString *)text{
+    
+    
+   
+    
+    if([text length] > 0)
+        
+    {
+        
+        NSXMLElement *body = [NSXMLElement elementWithName:@"body"];
+        
+        [body setStringValue:text];
+        
+        
+        NSXMLElement *message = [NSXMLElement elementWithName:@"message"];
+        
+        [message addAttributeWithName:@"type" stringValue:@"chat"];
+        
+        [message addAttributeWithName:@"to" stringValue:self.chatWithUser];
+        
+        [message addChild:body];
+        
+        if([image isKindOfClass:[UIImage class]])
+            
+        {
+            
+            UIGraphicsBeginImageContext(CGSizeMake(60,60));
+    
+            [image drawInRect: CGRectMake(0, 0, 60, 60)];
+            
+            UIImage *smallImage = UIGraphicsGetImageFromCurrentImageContext();
+            
+            UIGraphicsEndImageContext();
+            
+           
+            
+            NSData *dataF = UIImagePNGRepresentation(smallImage);
+            NSString *imgStr=[dataF base64EncodedStringWithOptions:0];
+            
+            NSXMLElement *ImgAttachement = [NSXMLElement elementWithName:@"attachement"];
+            [ImgAttachement setStringValue:imgStr];
+            [message addChild:ImgAttachement];
+            
+//            [m setObject:image forKey:@"image"];
+//            
+//            NSData *dataPic =  UIImagePNGRepresentation(image);
+//            
+//            NSXMLElement *photo = [NSXMLElement elementWithName:@"PHOTO"];
+//            
+//            NSXMLElement *binval = [NSXMLElement elementWithName:@"BINVAL"];
+//            
+//            [photo addChild:binval];
+//            
+//            NSString *base64String = [dataPic base64EncodedStringWithOptions:0];
+//            
+//            [binval setStringValue:base64String];
+//            
+//            [message addChild:photo];
+            
+        }
+        
+        [self.xmppStream sendElement:message];
+        
+    }
+
+}
+
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
 }
 
 

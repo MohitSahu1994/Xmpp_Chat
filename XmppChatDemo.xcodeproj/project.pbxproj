@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		702AB9AB1EAF280300144DAB /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 702AB9AA1EAF280300144DAB /* User.m */; };
+		702AB9AF1EAF559A00144DAB /* ImageCaptureVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 702AB9AD1EAF559A00144DAB /* ImageCaptureVC.m */; };
+		702AB9B01EAF559A00144DAB /* ImageCaptureVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 702AB9AE1EAF559A00144DAB /* ImageCaptureVC.xib */; };
+		702AB9B51EAF657D00144DAB /* MessagePreview.xib in Resources */ = {isa = PBXBuildFile; fileRef = 702AB9B31EAF657D00144DAB /* MessagePreview.xib */; };
+		702AB9B81EAF6CC800144DAB /* MessagePreview.m in Sources */ = {isa = PBXBuildFile; fileRef = 702AB9B71EAF6CC800144DAB /* MessagePreview.m */; };
+		705501BD1EAF16B800DD6FD1 /* ChatListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 705501BC1EAF16B800DD6FD1 /* ChatListCell.m */; };
+		705501BF1EAF16D300DD6FD1 /* ChatListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 705501BE1EAF16D300DD6FD1 /* ChatListCell.xib */; };
 		708517B81EAB461900C78E3C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 708517B41EAB461900C78E3C /* AppDelegate.m */; };
 		708517B91EAB461900C78E3C /* MessageViewTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 708517B71EAB461900C78E3C /* MessageViewTableCell.m */; };
 		708517BC1EAB467F00C78E3C /* NSString+Enhancement.m in Sources */ = {isa = PBXBuildFile; fileRef = 708517BB1EAB467F00C78E3C /* NSString+Enhancement.m */; };
@@ -36,6 +43,17 @@
 		054A41BC7F9F00C60248C385 /* Pods_XmppChatDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_XmppChatDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0FB10C3813BA29256E6EC672 /* Pods-XmppChatDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XmppChatDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-XmppChatDemo/Pods-XmppChatDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		4A34635866FFE47E440FDAE4 /* Pods-XmppChatDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XmppChatDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-XmppChatDemo/Pods-XmppChatDemo.release.xcconfig"; sourceTree = "<group>"; };
+		702AB9A91EAF280300144DAB /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
+		702AB9AA1EAF280300144DAB /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
+		702AB9AC1EAF559A00144DAB /* ImageCaptureVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageCaptureVC.h; sourceTree = "<group>"; };
+		702AB9AD1EAF559A00144DAB /* ImageCaptureVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageCaptureVC.m; sourceTree = "<group>"; };
+		702AB9AE1EAF559A00144DAB /* ImageCaptureVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImageCaptureVC.xib; sourceTree = "<group>"; };
+		702AB9B31EAF657D00144DAB /* MessagePreview.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MessagePreview.xib; sourceTree = "<group>"; };
+		702AB9B61EAF6CC800144DAB /* MessagePreview.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessagePreview.h; sourceTree = "<group>"; };
+		702AB9B71EAF6CC800144DAB /* MessagePreview.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessagePreview.m; sourceTree = "<group>"; };
+		705501BB1EAF16B800DD6FD1 /* ChatListCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatListCell.h; sourceTree = "<group>"; };
+		705501BC1EAF16B800DD6FD1 /* ChatListCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatListCell.m; sourceTree = "<group>"; };
+		705501BE1EAF16D300DD6FD1 /* ChatListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChatListCell.xib; sourceTree = "<group>"; };
 		708517B31EAB461900C78E3C /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		708517B41EAB461900C78E3C /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		708517B61EAB461900C78E3C /* MessageViewTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageViewTableCell.h; sourceTree = "<group>"; };
@@ -140,6 +158,17 @@
 				70EB36771EA8847800C62055 /* LaunchScreen.storyboard */,
 				70EB367A1EA8847800C62055 /* Info.plist */,
 				70EB36691EA8847800C62055 /* Supporting Files */,
+				705501BB1EAF16B800DD6FD1 /* ChatListCell.h */,
+				705501BC1EAF16B800DD6FD1 /* ChatListCell.m */,
+				705501BE1EAF16D300DD6FD1 /* ChatListCell.xib */,
+				702AB9A91EAF280300144DAB /* User.h */,
+				702AB9AA1EAF280300144DAB /* User.m */,
+				702AB9AC1EAF559A00144DAB /* ImageCaptureVC.h */,
+				702AB9AD1EAF559A00144DAB /* ImageCaptureVC.m */,
+				702AB9AE1EAF559A00144DAB /* ImageCaptureVC.xib */,
+				702AB9B61EAF6CC800144DAB /* MessagePreview.h */,
+				702AB9B71EAF6CC800144DAB /* MessagePreview.m */,
+				702AB9B31EAF657D00144DAB /* MessagePreview.xib */,
 			);
 			path = XmppChatDemo;
 			sourceTree = "<group>";
@@ -269,8 +298,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				70EB36791EA8847800C62055 /* LaunchScreen.storyboard in Resources */,
+				705501BF1EAF16D300DD6FD1 /* ChatListCell.xib in Resources */,
+				702AB9B51EAF657D00144DAB /* MessagePreview.xib in Resources */,
 				70EB36761EA8847800C62055 /* Assets.xcassets in Resources */,
 				70EB36741EA8847800C62055 /* Main.storyboard in Resources */,
+				702AB9B01EAF559A00144DAB /* ImageCaptureVC.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -333,9 +365,13 @@
 				708517B91EAB461900C78E3C /* MessageViewTableCell.m in Sources */,
 				70EBFCF81EAA0AB40055272E /* XMPPManager.m in Sources */,
 				70D33D891EAA7F1B0098A39B /* NewBuddyVC.m in Sources */,
+				705501BD1EAF16B800DD6FD1 /* ChatListCell.m in Sources */,
 				70EBFCF41EAA0AB40055272E /* ChatMenuVC.m in Sources */,
 				708517B81EAB461900C78E3C /* AppDelegate.m in Sources */,
+				702AB9AF1EAF559A00144DAB /* ImageCaptureVC.m in Sources */,
+				702AB9B81EAF6CC800144DAB /* MessagePreview.m in Sources */,
 				70EBFCF61EAA0AB40055272E /* LoginVC.m in Sources */,
+				702AB9AB1EAF280300144DAB /* User.m in Sources */,
 				70EBFCF71EAA0AB40055272E /* UserDefaultController.m in Sources */,
 				708517BC1EAB467F00C78E3C /* NSString+Enhancement.m in Sources */,
 				70EB366B1EA8847800C62055 /* main.m in Sources */,

@@ -15,6 +15,7 @@
 
 - (void)newBuddyOnline:(NSString *)buddyName;
 - (void)buddyWentOffline:(NSString *)buddyName;
+-(void)didfetchBuddies:(NSMutableArray *)buddiesArray;
 - (void)didDisconnect;
 
 @end
@@ -47,5 +48,6 @@
 - (BOOL)connect;
 - (void)disconnect;
 -(void)addNewBuddy:(NSString *)jid nickName:(NSString *)nickName;
+- (void)fetchBuddyList;
 
 @end

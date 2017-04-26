@@ -173,6 +173,10 @@ return xmppManager;
     
     NSString *msg = [[message elementForName:@"body"] stringValue];
     NSString *from = [[message attributeForName:@"from"] stringValue];
+    
+   NSString *attachement =  [[message elementsForName:@"attachment"] stringValue];
+    
+    NSLog(@"%@",attachement);
 
     if (msg != nil && from != nil) {
     NSMutableDictionary *messageDictionary = [[NSMutableDictionary alloc] init];
@@ -230,8 +234,49 @@ return xmppManager;
     [xmppRoster acceptPresenceSubscriptionRequestFrom:presence.from andAddToRoster:YES];
    
     
-    
 }
+
+
+- (void)fetchBuddyList
+{
+    NSError *error = [[NSError alloc] init];
+    NSXMLElement *query = [[NSXMLElement alloc] initWithXMLString:@"<query xmlns='jabber:iq:roster'/>"error:&error];
+    NSXMLElement *iq = [NSXMLElement elementWithName:@"iq"];
+    [iq addAttributeWithName:@"type" stringValue:@"get"];
+    [iq addAttributeWithName:@"id" stringValue:@"ANY_ID_NAME"];
+    [iq addAttributeWithName:@"from" stringValue:@"ANY_ID_NAME@localhost"];
+    [iq addChild:query];
+    [_xmppStream sendElement:iq];
+}
+
+
+- (BOOL)xmppStream:(XMPPStream *)sender didReceiveIQ:(XMPPIQ *)iq
+{
+    NSXMLElement *queryElement = [iq elementForName: @"query" xmlns: @"jabber:iq:roster"];
+    if (queryElement)
+    {
+        NSArray *itemElements = [queryElement elementsForName: @"item"];
+        if (itemElements.count) {
+        
+        
+        NSMutableArray *chatListArray = [[NSMutableArray alloc] init];
+        for (int i=0; i<[itemElements count]; i++)
+        {
+           [chatListArray addObject:[[itemElements[i] attributeForName:@"jid"]stringValue]];
+            
+        }
+            if (self._chatDelegate && [self._chatDelegate respondsToSelector:@selector(didfetchBuddies:)]) {
+                
+                [self._chatDelegate didfetchBuddies:chatListArray];
+            }
+            
+       }
+    
+    }
+    
+    return NO;
+}
+
 
 #pragma mark--
 #pragma mark-- Reconnection Delegate Methods

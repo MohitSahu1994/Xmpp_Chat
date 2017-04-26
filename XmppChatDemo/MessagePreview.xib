@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="15G1108" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MessagePreview">
+            <connections>
+                <outlet property="captionField" destination="cvq-cW-DEj" id="BCn-mY-0cP"/>
+                <outlet property="imageView" destination="bnw-CJ-bEN" id="B1w-aw-S4l"/>
+                <outlet property="view" destination="iyv-22-lst" id="kui-5v-8gy"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleAspectFill" id="iyv-22-lst">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="bnw-CJ-bEN">
+                    <rect key="frame" x="0.0" y="10" width="375" height="197"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="197" id="1mp-Ch-WdF"/>
+                    </constraints>
+                </imageView>
+                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" placeholder="Enter caption.." textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="cvq-cW-DEj">
+                    <rect key="frame" x="2" y="216" width="371" height="52"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="52" id="8ii-00-eLA"/>
+                    </constraints>
+                    <nil key="textColor"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <textInputTraits key="textInputTraits"/>
+                </textField>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IWF-mA-3jg">
+                    <rect key="frame" x="16" y="293" width="140" height="50"/>
+                    <color key="backgroundColor" red="0.95294117649999999" green="0.20392156859999999" blue="0.20392156859999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="8I8-fo-mxF"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                    <state key="normal" title="Cancel">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="cancelAction:" destination="-1" eventType="touchUpInside" id="OyG-YI-ERr"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TFe-0r-gmg">
+                    <rect key="frame" x="203" y="293" width="140" height="50"/>
+                    <color key="backgroundColor" red="0.95294117649999999" green="0.20392156859999999" blue="0.20392156859999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="YwA-H8-ewg"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                    <state key="normal" title="Send">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="sendAction:" destination="-1" eventType="touchUpInside" id="km5-JG-aTz"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="TFe-0r-gmg" firstAttribute="top" secondItem="cvq-cW-DEj" secondAttribute="bottom" constant="25" id="34h-1u-zId"/>
+                <constraint firstItem="TFe-0r-gmg" firstAttribute="width" secondItem="IWF-mA-3jg" secondAttribute="width" id="6GQ-Uo-Dhm"/>
+                <constraint firstItem="IWF-mA-3jg" firstAttribute="leading" secondItem="iyv-22-lst" secondAttribute="leading" constant="16" id="8hW-Cb-JLu"/>
+                <constraint firstAttribute="trailing" secondItem="bnw-CJ-bEN" secondAttribute="trailing" id="8j9-RF-hgw"/>
+                <constraint firstItem="IWF-mA-3jg" firstAttribute="top" secondItem="cvq-cW-DEj" secondAttribute="bottom" constant="25" id="GOw-cd-ipS"/>
+                <constraint firstAttribute="trailing" secondItem="cvq-cW-DEj" secondAttribute="trailing" constant="2" id="Iur-ld-nUc"/>
+                <constraint firstItem="cvq-cW-DEj" firstAttribute="top" secondItem="bnw-CJ-bEN" secondAttribute="bottom" constant="9" id="QQZ-3Q-dRZ"/>
+                <constraint firstItem="bnw-CJ-bEN" firstAttribute="leading" secondItem="iyv-22-lst" secondAttribute="leading" id="SxC-eu-ZzD"/>
+                <constraint firstItem="cvq-cW-DEj" firstAttribute="leading" secondItem="iyv-22-lst" secondAttribute="leading" constant="2" id="YNi-K6-dJ1"/>
+                <constraint firstAttribute="trailing" secondItem="TFe-0r-gmg" secondAttribute="trailing" constant="32" id="bca-vg-fDb"/>
+                <constraint firstItem="cvq-cW-DEj" firstAttribute="top" secondItem="bnw-CJ-bEN" secondAttribute="bottom" constant="9" id="gEl-aI-atR"/>
+                <constraint firstItem="TFe-0r-gmg" firstAttribute="centerY" secondItem="IWF-mA-3jg" secondAttribute="centerY" id="iUJ-sG-hEE"/>
+                <constraint firstItem="TFe-0r-gmg" firstAttribute="height" secondItem="IWF-mA-3jg" secondAttribute="height" id="jF0-Y0-8Vk"/>
+                <constraint firstItem="bnw-CJ-bEN" firstAttribute="top" secondItem="iyv-22-lst" secondAttribute="top" constant="10" id="oQp-gb-TTQ"/>
+                <constraint firstItem="TFe-0r-gmg" firstAttribute="leading" secondItem="IWF-mA-3jg" secondAttribute="trailing" constant="47" id="zbp-rP-MWT"/>
+            </constraints>
+            <point key="canvasLocation" x="-88.5" y="42.5"/>
+        </view>
+    </objects>
+</document>

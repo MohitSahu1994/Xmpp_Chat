@@ -9,8 +9,10 @@
 #import "ChatMenuVC.h"
 #import "LoginVC.h"
 #import "UserDefaultController.h"
+#import "ChatListCell.h"
+#import "User.h"
 #define CELL_IDENTIFIER @"cell"
-//#import "AppDelegate.h"
+
 #import "ChatVC.h"
 #import "XMPPManager.h"
 #import "NewBuddyVC.h"
@@ -23,6 +25,7 @@
 
 @implementation ChatMenuVC{
 
+    NSMutableArray *buddies;
     NSMutableArray *onlineBuddies;
 }
 
@@ -33,6 +36,7 @@
     manager._chatDelegate = self;
     [self tableViewSetup];
     // Do any additional setup after loading the view.
+    
 }
 
 -(XMPPManager *)xmppManager{
@@ -49,7 +53,7 @@
         self.navigationItem.title = userId;
     if ([[self xmppManager] connect]) {
             
-        NSLog(@"show buddy list");
+        
             
         
     }
@@ -60,11 +64,20 @@
 }
 
 
+-(void)fetchBuddyList{
+    
+    [[self xmppManager] fetchBuddyList];
+
+}
+
+
+
 -(void)tableViewSetup{
     self.automaticallyAdjustsScrollViewInsets = NO;
-    [self.tableView registerClass:[UITableViewCell.self class] forCellReuseIdentifier:CELL_IDENTIFIER];
-    onlineBuddies = [[NSMutableArray alloc ] init];
-
+    [self.tableView registerNib:[UINib nibWithNibName:@"ChatListCell" bundle:nil] forCellReuseIdentifier:CELL_IDENTIFIER];
+    
+    buddies = [[NSMutableArray alloc ] init];
+    onlineBuddies = [[NSMutableArray alloc] init];
 
 }
 
@@ -74,12 +87,19 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    NSString *buddy = (NSString *) [onlineBuddies objectAtIndex:indexPath.row];
+    User *user = (User *) [buddies objectAtIndex:indexPath.row];
    
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CELL_IDENTIFIER forIndexPath:indexPath];
+    ChatListCell *cell = (ChatListCell *)[tableView dequeueReusableCellWithIdentifier:CELL_IDENTIFIER forIndexPath:indexPath];
     
-    cell.textLabel.text = buddy;
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    cell.userNamelbl.text = user.name;
+    if (user.isOnline) {
+        cell.statusImageView.hidden = NO;
+        cell.statusImageView.image = [UIImage imageNamed:@"online"];
+    }
+    else{
+        cell.statusImageView.hidden = YES;
+    }
+   
     
     return cell;
     
@@ -87,7 +107,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
-    return [onlineBuddies count];
+    return [buddies count];
     
 }
 
@@ -96,11 +116,12 @@
     
      [tableView deselectRowAtIndexPath:indexPath animated:NO];
     // start a chat
-    NSString *userName = (NSString *) [onlineBuddies objectAtIndex:indexPath.row];
+    User *user = (User *) [buddies objectAtIndex:indexPath.row];
     UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     ChatVC *chatController = [storyBoard instantiateViewControllerWithIdentifier:@"ChatVC"];
-    chatController.chatWithUser = userName;
-    [self.navigationController pushViewController:chatController animated:YES];
+    chatController.chatWithUser = user.name;
+    [self presentViewController:chatController animated:YES completion:nil];
+    
     
 }
 
@@ -118,6 +139,10 @@
 
 
 -(void)showLogin{
+    
+    [onlineBuddies removeAllObjects];
+    [buddies removeAllObjects];
+    
     UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     LoginVC *loginVC =  (LoginVC *)[storyBoard instantiateViewControllerWithIdentifier:@"LoginVC"];
     [self.navigationController pushViewController:loginVC animated:YES];
@@ -128,8 +153,8 @@
 #pragma mark- SMChatDelegate Methods
 - (void)newBuddyOnline:(NSString *)buddyName {
     if (![onlineBuddies containsObject:buddyName]) {
-         [onlineBuddies addObject:buddyName];
-         [self.tableView reloadData];
+        [onlineBuddies addObject:buddyName];
+        [self updateUserStatus:buddyName isOnline:YES];
     }
     
    
@@ -137,9 +162,72 @@
 
 - (void)buddyWentOffline:(NSString *)buddyName {
     [onlineBuddies removeObject:buddyName];
-    [self.tableView reloadData];
+    [self updateUserStatus:buddyName isOnline:NO];
 }
 
+
+-(void)didfetchBuddies:(NSMutableArray *)buddiesArray{
+
+    if (buddiesArray.count) {
+       
+        [self populateBuddiesFromArray:buddiesArray];
+    }
+}
+
+
+-(void)populateBuddiesFromArray:(NSMutableArray *)array{
+    
+    for (NSInteger index =0;index<array.count;index++) {
+        
+        NSString *userName = [array objectAtIndex:index];
+        NSPredicate  *predicate = [NSPredicate predicateWithFormat:@"self.name MATCHES[cd] %@",userName];
+       User *oldUser = [self checkArrayContainsUser:buddies UsingPredicate:predicate];
+        
+        if (oldUser== nil && ![userName isEqualToString:[[UserDefaultController sharedInstance] getUserId]]) {
+        User *user =  [[User alloc] init];
+            user.name = userName;
+        if ([onlineBuddies containsObject:user.name]) {
+            user.isOnline = YES;
+        }
+       
+        
+        [buddies addObject:user];
+    }
+    
+    [self.tableView reloadData];
+    }
+
+}
+
+-(void)updateUserStatus:(NSString *)user isOnline:(BOOL)isOnline{
+
+    if (buddies.count) {
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"self.name MATCHES[cd] %@",user];
+        NSArray *resultArray = [buddies filteredArrayUsingPredicate:predicate];
+        User *user = [resultArray lastObject];
+        NSInteger index = [buddies indexOfObject:user];
+         user.isOnline = isOnline;
+        if (index != NSNotFound) {
+            NSIndexPath *indexpath = [NSIndexPath indexPathForRow:index inSection:0];
+            [self.tableView reloadRowsAtIndexPaths:@[indexpath] withRowAnimation:UITableViewRowAnimationNone];
+        }
+        
+    }
+    
+    
+
+}
+
+
+-(User *)checkArrayContainsUser:(NSMutableArray *)userArray UsingPredicate:(NSPredicate *)predicate{
+
+    User *user;
+    NSArray *resultArray = [userArray filteredArrayUsingPredicate:predicate];
+    if (resultArray.count) {
+        user =  (User *)[resultArray lastObject];
+    }
+    return user;
+}
 
 -(void)didDisconnect{
 
