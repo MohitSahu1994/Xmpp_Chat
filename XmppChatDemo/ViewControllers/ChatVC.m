@@ -19,7 +19,7 @@
 #import "UserDefaultController.h"
 
 #define Cell_Identifier @"messageCell"
-@interface ChatVC ()<UITableViewDelegate ,UITableViewDataSource,SMMessageDelegate ,ImageCaptureDelegate ,MessagePreviewDelegate>
+@interface ChatVC ()<UITableViewDelegate ,UITableViewDataSource,SMMessageDelegate ,ImageCaptureDelegate ,MessagePreviewDelegate,MessageTableViewCellDelegate>
 
 
 
@@ -48,7 +48,8 @@
     
     messages = [[NSMutableArray alloc ] init];
     [self.messageField becomeFirstResponder];
-       // Do any additional setup after loading the view.
+    
+    self.automaticallyAdjustsScrollViewInsets = NO;
 }
 
 
@@ -74,105 +75,10 @@
     if (cell == nil) {
         cell = [[MessageViewTableCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:Cell_Identifier] ;
     }
-    
-   
-    
+    cell.delegate = self;
     CGSize size =  [self heightStringWithEmojis:message.message fontType:[UIFont boldSystemFontOfSize:13] ForWidth:320 ForMinimumLineSpace:3];
-    
-    if(!message.attachment){
+    [cell setupCellForMessage:message textSize:size];
    
-    
-    cell.messageContentView.text = message.message;
-    cell.accessoryType = UITableViewCellAccessoryNone;
-    cell.userInteractionEnabled = NO;
-    
-    NSUInteger padding = cell.senderAndTimeLabel.frame.size.height + 6;
-    UIImage *bgImage = nil;
-    
-    
-    if (![message.sender isEqualToString:@"you"]) { // left aligned
-        if (!message.isRead) {
-            message.isRead = YES;
-            [self updateSenderMessageReadByUser:message];
-        }
-        
-        bgImage = [[UIImage imageNamed:@"orange"] stretchableImageWithLeftCapWidth:24  topCapHeight:15];
-        
-        [cell.messageContentView setFrame:CGRectMake(padding, padding, size.width + padding, size.height+padding)];
-        
-        [cell.bgImageView setFrame:CGRectMake( cell.messageContentView.frame.origin.x-padding/2,
-                                              cell.messageContentView.frame.origin.y-padding/4,
-                                              size.width+padding * 1.5,
-                                              size.height+(padding * 1.2))];
-        [cell.statusLabel setFrame:CGRectMake(cell.messageContentView.frame.origin.x + cell.messageContentView.frame.size.width - 40, cell.messageContentView.frame.origin.y +cell.messageContentView.frame.size.height+15, 40, 20)];
-        
-        cell.statusLabel.text = message.status;
-        
-    } else {
-        
-        bgImage = [[UIImage imageNamed:@"aqua"] stretchableImageWithLeftCapWidth:24  topCapHeight:15];
-        
-        [cell.messageContentView setFrame:CGRectMake(320 - size.width - padding,
-                                                     padding*2,
-                                                     size.width + padding ,
-                                                     size.height + padding)];
-        
-        [cell.bgImageView setFrame:CGRectMake(cell.messageContentView.frame.origin.x - padding/2,
-                                              cell.messageContentView.frame.origin.y - padding/4,
-                                              size.width+padding *1.5,
-                                              size.height+(padding * 1.2))];
-        
-    }
-    
-    cell.bgImageView.image = bgImage;
-    cell.senderAndTimeLabel.text = [NSString stringWithFormat:@"%@", message.time];
-        
-        
-    }
-    else{
-        
-         cell.senderAndTimeLabel.text = message.time;
-        
-        NSInteger padding = 40;
-        if ([message.sender isEqualToString:@"you"]) {
-        
-    
-        [cell.bgImageView setFrame:CGRectMake( cell.senderAndTimeLabel.center.x +padding,
-                                              cell.senderAndTimeLabel.frame.size.height + 10,
-                                              50,50)];
-            
-            [cell.messageContentView setFrame:CGRectMake(cell.senderAndTimeLabel.center.x
-                                                         , cell.bgImageView.frame.size.height +30,
-                                                         size.width +padding,size.height+padding)];
-            
-            [cell.statusLabel setFrame:CGRectMake(cell.messageContentView.frame.origin.x + cell.messageContentView.frame.size.width - 40, cell.messageContentView.frame.origin.y +cell.messageContentView.frame.size.height+15, 40, 20)];
-            
-             cell.statusLabel.text = message.status;
-            
-        }
-        else{
-            
-            if (!message.isRead) {
-                message.isRead = YES;
-                [self updateSenderMessageReadByUser:message];
-            }
-
-            [cell.bgImageView setFrame:CGRectMake( cell.senderAndTimeLabel.frame.origin.x +padding,
-                                                  cell.senderAndTimeLabel.frame.size.height + 10,
-                                                  50,50)];
-            [cell.messageContentView setFrame:CGRectMake(cell.senderAndTimeLabel.center.x
-                                                         , cell.bgImageView.frame.size.height +30,
-                                                         size.width +padding,size.height + padding)];
-        }
-        
-        NSData *imageData = [[NSData alloc] initWithBase64EncodedString:message.attachment options:0];
-        UIImage *image = [UIImage imageWithData:imageData];
-        cell.bgImageView.image = image;
-        cell.messageContentView.text = message.message;
-       
-        
-    }
-
     return cell;
     
 }
@@ -207,10 +113,7 @@
 }
 
 #pragma mark -
-#pragma mark Chat delegates
-
-// react to the message received
-
+#pragma mark Actions
 
 - (IBAction)sendMessageAction:(UIButton *)sender {
     [self.messageField resignFirstResponder];
@@ -231,14 +134,13 @@
     
 }
 
-#pragma mark-
-#pragma mark- SMMessageDelegate Methods
+
 - (void)sendMessage {
     
     NSString *messageStr = self.messageField.text;
     
     if([messageStr length] > 0) {
-         NSString *messageID=[NSString uuid];
+        NSString *messageID=[NSString uuid];
         
         NSXMLElement *body = [NSXMLElement elementWithName:@"body"];
         [body setStringValue:messageStr];
@@ -259,6 +161,7 @@
         [messageDictionary setObject:[NSString getCurrentTime] forKey:@"time"];
         [messageDictionary setObject:messageStr forKey:@"msg"];
         [messageDictionary setObject:@"you" forKey:@"sender"];
+        [messageDictionary setObject:messageID forKey:@"id"];
         
         Message *newMessage = [self populateMessageFromContent:messageDictionary];
         [messages addObject:newMessage];
@@ -267,6 +170,10 @@
         
     }
 }
+
+
+#pragma mark-
+#pragma mark- SMMessageDelegate Methods
 
 
 -(void)newMessageReceived:(NSDictionary *)messageContent{
@@ -289,10 +196,7 @@
     newMessage.sender = sender;
     newMessage.time =time;
     newMessage.message = message;
-    if (attachment) {
-        newMessage.attachment = attachment;
-    }
-    
+    newMessage.attachment = attachment;
     newMessage.isRead = false;
     newMessage.messageID = messageId;
 
@@ -328,63 +232,17 @@
     _statusLabel.text = statusString;
     
     
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"self.messageId MATCHS[cd] %@",messageId];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"self.messageID LIKE[c] %@",messageId];
     NSArray *filteredArray = [messages filteredArrayUsingPredicate:predicate];
-    Message *newMessage = (Message *)[filteredArray firstObject];
-    
-    
-}
-
-
-
-
--(void)updateSenderMessageReadByUser:(Message *)message{
-
-    NSXMLElement *receivedelement = [NSXMLElement elementWithName:@"received" xmlns:@"urn:xmpp:receipts"];
-    NSString *myJid = [[UserDefaultController sharedInstance] getUserId];
-    
-    NSXMLElement *messageElement = [NSXMLElement elementWithName:@"message" xmlns:@"jabber:client"];
-    [messageElement addAttributeWithName:@"to" stringValue:message.sender];
-    [messageElement addAttributeWithName:@"from" stringValue:myJid];
-    [receivedelement addAttributeWithName:@"id" stringValue:message.messageID];
-    [receivedelement addAttributeWithName:@"read" stringValue:@"true"];
-    [messageElement addChild:receivedelement];
-    
-       [self.xmppStream sendElement:messageElement];
+    Message *newMessage = (Message *)[filteredArray lastObject];
+    NSInteger index = [messages indexOfObject:newMessage];
+    if (index!=NSNotFound) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+        Message *message = [messages objectAtIndex:index];
+        message.status = statusString;
+        [_messageTableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
     }
-
-
-- (CGSize)heightStringWithEmojis:(NSString*)str fontType:(UIFont *)uiFont ForWidth:(CGFloat)width ForMinimumLineSpace:(CGFloat)lineSpace{
     
-    // Get text
-    CFMutableAttributedStringRef attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0);
-    CFAttributedStringReplaceString (attrString, CFRangeMake(0, 0), (CFStringRef) str );
-    CFIndex stringLength = CFStringGetLength((CFStringRef) attrString);
-    
-    // Change font
-    CTFontRef ctFont = CTFontCreateWithName((__bridge CFStringRef) uiFont.fontName, uiFont.pointSize, NULL);
-    CFAttributedStringSetAttribute(attrString, CFRangeMake(0, stringLength), kCTFontAttributeName, ctFont);
-    
-    // For Line Space
-    const CTParagraphStyleSetting styleSettings[] = {
-        {kCTParagraphStyleSpecifierLineSpacingAdjustment, sizeof(CGFloat), &lineSpace},
-    };
-    CTParagraphStyleRef style = CTParagraphStyleCreate((const CTParagraphStyleSetting*)styleSettings, 1);
-    CFAttributedStringSetAttribute(attrString, CFRangeMake(0, stringLength), kCTParagraphStyleAttributeName, style);
-    
-    // Calc the size
-    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString(attrString);
-    CFRange fitRange;
-    CGSize frameSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, stringLength), NULL, CGSizeMake(width, 9999), &fitRange);
-    
-    CFRelease(ctFont);
-    
-    CFRelease(style);
-    
-    CFRelease(framesetter);
-    CFRelease(attrString);
-    
-    return frameSize;
     
 }
 
@@ -392,8 +250,12 @@
 
 
 
-#pragma mark--
-#pragma mark-- ImageCaptureDelegate Methods
+
+
+
+
+#pragma mark-
+#pragma mark- ImageCaptureDelegate Methods
 -(void)capturedImageByUser:(UIImage *)image{
     MessagePreview *messagePreview = [[MessagePreview alloc] initWithNibName:@"MessagePreview" bundle:nil];
     messagePreview.image = image;
@@ -403,8 +265,8 @@
 }
 
 
-#pragma mark--
-#pragma mark-- MessagePreviewDelegate Methods
+#pragma mark-
+#pragma mark- MessagePreviewDelegate Methods
 
 -(void)sendMessageWithImage:(UIImage *)image text:(NSString *)text{
     
@@ -456,6 +318,7 @@
         [messageDictionary setObject:text forKey:@"msg"];
         [messageDictionary setObject:@"you" forKey:@"sender"];
         [messageDictionary setObject:imgStr forKey:@"attachment"];
+        [messageDictionary setObject:messageID forKey:@"id"];
         
         Message *newMessage = [self populateMessageFromContent:messageDictionary];
         [messages addObject:newMessage];
@@ -464,6 +327,69 @@
     }
 
 }
+
+
+#pragma mark
+#pragma mark- MessageTableViewCellDelegate Methods
+
+-(void)updateMessageStatusReadByUser:(Message *)message{
+
+    [self updateSenderMessageStatusReadByUser:message];
+}
+
+-(void)updateSenderMessageStatusReadByUser:(Message *)message{
+    
+    NSXMLElement *receivedelement = [NSXMLElement elementWithName:@"received" xmlns:@"urn:xmpp:receipts"];
+    NSString *myJid = [[UserDefaultController sharedInstance] getUserId];
+    
+    NSXMLElement *messageElement = [NSXMLElement elementWithName:@"message" xmlns:@"jabber:client"];
+    [messageElement addAttributeWithName:@"to" stringValue:message.sender];
+    [messageElement addAttributeWithName:@"from" stringValue:myJid];
+    [receivedelement addAttributeWithName:@"id" stringValue:message.messageID];
+    [receivedelement addAttributeWithName:@"read" stringValue:@"true"];
+    [messageElement addChild:receivedelement];
+    
+    [self.xmppStream sendElement:messageElement];
+}
+
+
+
+
+
+- (CGSize)heightStringWithEmojis:(NSString*)str fontType:(UIFont *)uiFont ForWidth:(CGFloat)width ForMinimumLineSpace:(CGFloat)lineSpace{
+    
+    // Get text
+    CFMutableAttributedStringRef attrString = CFAttributedStringCreateMutable(kCFAllocatorDefault, 0);
+    CFAttributedStringReplaceString (attrString, CFRangeMake(0, 0), (CFStringRef) str );
+    CFIndex stringLength = CFStringGetLength((CFStringRef) attrString);
+    
+    // Change font
+    CTFontRef ctFont = CTFontCreateWithName((__bridge CFStringRef) uiFont.fontName, uiFont.pointSize, NULL);
+    CFAttributedStringSetAttribute(attrString, CFRangeMake(0, stringLength), kCTFontAttributeName, ctFont);
+    
+    // For Line Space
+    const CTParagraphStyleSetting styleSettings[] = {
+        {kCTParagraphStyleSpecifierLineSpacingAdjustment, sizeof(CGFloat), &lineSpace},
+    };
+    CTParagraphStyleRef style = CTParagraphStyleCreate((const CTParagraphStyleSetting*)styleSettings, 1);
+    CFAttributedStringSetAttribute(attrString, CFRangeMake(0, stringLength), kCTParagraphStyleAttributeName, style);
+    
+    // Calc the size
+    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString(attrString);
+    CFRange fitRange;
+    CGSize frameSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, stringLength), NULL, CGSizeMake(width, 9999), &fitRange);
+    
+    CFRelease(ctFont);
+    
+    CFRelease(style);
+    
+    CFRelease(framesetter);
+    CFRelease(attrString);
+    
+    return frameSize;
+    
+}
+
 
 
 - (void)didReceiveMemoryWarning {

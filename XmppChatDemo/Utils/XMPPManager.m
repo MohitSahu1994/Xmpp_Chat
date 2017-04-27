@@ -232,13 +232,8 @@ return xmppManager;
     
     NSString *msg = [[message elementForName:@"body"] stringValue];
     NSString *from = [[message attributeForName:@"from"] stringValue];
-    NSString *attachement;
-    if ([message elementsForName:@"attachment"]) {
-       attachement =  [[message elementForName:@"attachment"] stringValue];
-    }
-    
-   
-    
+    NSString *messageId = [[message attributeForName:@"id"] stringValue];
+    NSString *attachement =  [[message elementForName:@"attachment"] stringValue];
     
     NSLog(@"%@",attachement);
     
@@ -247,8 +242,11 @@ return xmppManager;
         [messageDictionary setObject:msg forKey:@"msg"];
         [messageDictionary setObject:from forKey:@"sender"];
         [messageDictionary setObject:[NSString getCurrentTime] forKey:@"time"];
+        [messageDictionary setObject:messageId forKey:@"id"];
+        if (attachement) {
+            [messageDictionary setObject:attachement forKey:@"attachment"];
+        }
         
-       
         if (_messageDelegate && [_messageDelegate respondsToSelector:@selector(newMessageReceived:)]) {
             
             [_messageDelegate newMessageReceived:messageDictionary];
