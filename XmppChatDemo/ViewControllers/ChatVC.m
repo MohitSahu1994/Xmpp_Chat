@@ -47,7 +47,7 @@
     self.titleLabel.text = self.chatWithUser;
     
     messages = [[NSMutableArray alloc ] init];
-    [self.messageField becomeFirstResponder];
+//    [self.messageField becomeFirstResponder];
     
     self.automaticallyAdjustsScrollViewInsets = NO;
 }

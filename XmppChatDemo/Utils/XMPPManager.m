@@ -18,7 +18,10 @@
     XMPPRoster *xmppRoster;
     XMPPRosterCoreDataStorage *xmppRosterStorage;
     XMPPReconnect *xmppReconnect;
-    
+    XMPPPing *xmppPing;
+    XMPPAutoPing *xmppAutoPing;
+    XMPPStreamManagement *xmppStreamManagement;
+    XMPPStreamManagementMemoryStorage *xmppStreamManagementMemoryStorage;
 }
 
 
@@ -50,6 +53,8 @@ return xmppManager;
    
     [xmppRoster activate:_xmppStream];
     [xmppRoster addDelegate:self delegateQueue:dispatch_get_main_queue()];
+    
+    
 
 #if !TARGET_IPHONE_SIMULATOR
     {
@@ -82,6 +87,30 @@ return xmppManager;
     
     [xmppMessageDeliveryRecipts addDelegate:self delegateQueue:dispatch_get_main_queue()];
     [xmppMessageDeliveryRecipts activate:self.xmppStream];
+    
+    
+    
+
+    
+    xmppPing = [[XMPPPing alloc] init];
+    xmppPing.respondsToQueries = YES;
+    [xmppPing activate:self.xmppStream];
+    
+    
+    xmppAutoPing = [[XMPPAutoPing alloc] init];
+    xmppAutoPing.pingInterval = 2*60;
+    xmppAutoPing.pingTimeout = 10.0;
+    [xmppAutoPing activate:self.xmppStream];
+    
+    
+    xmppStreamManagementMemoryStorage = [[XMPPStreamManagementMemoryStorage alloc] init];
+    xmppStreamManagement = [[XMPPStreamManagement alloc] initWithStorage:xmppStreamManagementMemoryStorage dispatchQueue:dispatch_get_main_queue()];
+    xmppStreamManagement.autoResume = YES;
+    [xmppStreamManagement addDelegate:self delegateQueue:dispatch_get_main_queue()];
+    [xmppStreamManagement activate:self.xmppStream];
+
+    
+    
 
 }
 
@@ -175,7 +204,9 @@ return xmppManager;
 
 - (void)xmppStreamDidAuthenticate:(XMPPStream *)sender {
     
+    [xmppStreamManagement enableStreamManagementWithResumption:YES maxTimeout:100];
     // authentication successful
+    
     [self goOnline];
     
 }
@@ -226,9 +257,6 @@ return xmppManager;
 }
 
 -(void)handleChatMessageWithBody:(XMPPMessage *)message{
-
-    
-        
     
     NSString *msg = [[message elementForName:@"body"] stringValue];
     NSString *from = [[message attributeForName:@"from"] stringValue];
@@ -285,7 +313,6 @@ return xmppManager;
 
 - (void)xmppStream:(XMPPStream *)sender didReceivePresence:(XMPPPresence *)presence {
     
-    // a buddy went offline/online
     
     NSString *presenceType = [presence type]; // online/offline
     NSString *myUsername = [[sender myJID] user];
@@ -381,6 +408,19 @@ return xmppManager;
 - (BOOL)xmppReconnect:(XMPPReconnect *)sender shouldAttemptAutoReconnect:(SCNetworkConnectionFlags)connectionFlags{
     NSLog(@"shouldAttemptAutoReconnect:%u",connectionFlags);
         return YES;
+}
+
+
+
+
+- (void)setLastDisconnect:(NSDate *)date
+      lastHandledByClient:(uint32_t)lastHandledByClient
+      lastHandledByServer:(uint32_t)lastHandledByServer
+   pendingOutgoingStanzas:(NSArray *)pendingOutgoingStanzas
+                forStream:(XMPPStream *)stream{
+
+
+    NSLog(@"%@",pendingOutgoingStanzas);
 }
 
 @end
